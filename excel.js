@@ -1,33 +1,25 @@
 let selectedFiles;
-console.log(window.XLSX);
 document.getElementById("input").addEventListener("change", (event) => {
   selectedFiles = event.target.files;
 });
 
-let data = [
-  {
-    name: "jayanth",
-    data: "scd",
-    abc: "sdef",
-  },
-];
-
 document.getElementById("button").addEventListener("click", () => {
-  XLSX.utils.json_to_sheet(data, "out.xlsx");
-  let response = { data: { finalData: [] }, headerData: { finalData: [] } };
+  const response = { data: { finalData: [] }, headerData: { finalData: [] } };
   readExcelFile(0, response);
 });
 
 function readExcelFile(fileIndex, response) {
-  let fileReader = new FileReader();
+  const fileReader = new FileReader();
   fileReader.readAsBinaryString(selectedFiles[fileIndex]);
   fileReader.onload = (event) => {
-    let excelData = event.target.result;
-    let workbook = XLSX.read(excelData, { type: "binary" });
+    const excelData = event.target.result;
+    const workbook = XLSX.read(excelData, { 
+        type: "binary", cellDates: true, dateNF: 'yyyy-mm-dd HH:MM:ss'
+    });
     response.data[fileIndex + 1] = [];
     response.headerData[fileIndex + 1] = [];
     workbook.SheetNames.forEach((sheet, sheetIndex) => {
-      let rowObject = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {
+      const rowObject = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {
         raw: false,
       });
       if (rowObject && rowObject.length > 0) {
@@ -55,11 +47,11 @@ function readExcelFile(fileIndex, response) {
 }
 
 function exportAsExcelFile(json, headerName, excelFileName) {
-  let objectMaxLength = [];
+  const objectMaxLength = [];
   const workSheet = {};
   for (const key in json) {
     Object.keys(headerName[key]).map((headerKey) => {
-      let value =
+      const value =
         headerName[key][headerKey] === undefined || headerName[key][headerKey] === null
           ? ""
           : headerName[key][headerKey];
@@ -70,7 +62,7 @@ function exportAsExcelFile(json, headerName, excelFileName) {
     });
     json[key].map((arr) => {
       Object.keys(headerName[key]).map((headerKey) => {
-        let value =
+        const value =
           arr[headerName[key][headerKey]] === undefined || arr[headerName[key][headerKey]] === null
             ? ""
             : arr[headerName[key][headerKey]];
@@ -90,7 +82,7 @@ function exportAsExcelFile(json, headerName, excelFileName) {
 
   const excelBuffer =
     "data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," +
-    XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
+    XLSX.write(workbook, { bookType: "xlsx", type: "base64", cellDates: true });
 
   const downloadLink = document.createElement("a");
   downloadLink.href = excelBuffer;
