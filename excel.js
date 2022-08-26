@@ -14,7 +14,7 @@ function readExcelFile(fileIndex, response) {
   fileReader.onload = (event) => {
     const excelData = event.target.result;
     const workbook = XLSX.read(excelData, { 
-        type: "binary", cellDates: true, dateNF: 'yyyy-mm-dd HH:MM:ss'
+        type: "binary", cellDates: true, dateNF: 'dd-mm-yyyy hh:MM'
     });
     response.data[fileIndex + 1] = [];
     response.headerData[fileIndex + 1] = [];
